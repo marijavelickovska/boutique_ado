@@ -19,4 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),  # ova samo deka koristat postara verzija na django, inaku sega e avtomatski povrzano
+    path('', include('home.urls')),
 ]
