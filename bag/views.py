@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 
-# Create your views here.
 
 def view_bag(request):
     """ A view that renders the bag contents page """
@@ -10,16 +9,29 @@ def view_bag(request):
 
 def add_to_bag(request, item_id):
     """ Add a quantity of the specified product to the shopping bag """
+    # gi zima podatocite od formata i samo gi stava vo sesija, ne vraka nisto na template zosto toa go pravi context processorot
+    # od context procesorot moze da se zemat site varijabli i da se koristat vo koj sakame template
 
     quantity = int(request.POST.get('quantity'))
     redirect_url = request.POST.get('redirect_url')
-    bag = request.session.get('bag', {})  # get the bag variable if it exists in the session or create it if it doesn't
+    size = None
+    if 'product_size' in request.POST:
+        size = request.POST['product_size']
+    bag = request.session.get('bag', {})
 
-    if item_id in list(bag.keys()):
-        bag[item_id] += quantity  # update the quantity if the item already exists
+    if size:
+        if item_id in list(bag.keys()):
+            if size in bag[item_id]['items_by_size'].keys():
+                bag[item_id]['items_by_size'][size] += quantity
+            else:
+                bag[item_id]['items_by_size'][size] = quantity
+        else:
+            bag[item_id] = {'items_by_size': {size: quantity}}
     else:
-        bag[item_id] = quantity  # add the item 
+        if item_id in list(bag.keys()):
+            bag[item_id] += quantity
+        else:
+            bag[item_id] = quantity
 
-    request.session['bag'] = bag  # overwrite the variable in the session with the updated version
-    # print(request.session['bag'])
+    request.session['bag'] = bag
     return redirect(redirect_url)
