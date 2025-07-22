@@ -35,7 +35,6 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
     integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
     crossorigin="anonymous"></script>
-  
   {% endblock %}
 
   {% block extra_js %}
@@ -151,29 +150,11 @@
   {% endblock %}
 
   {% block postloadjs %}
-  {{ block.super }}
-  {% include 'products/includes/quantity_input_script.html' %}
-  <script type="text/javascript">
-      
-      // Update quantity on click
-      $('.update-link').click(function(e) {
-          var form = $(this).prev('.update-form');
-          form.submit();
-      })
 
-      // Remove item and reload on click
-      $('.remove-item').click(function(e) {
-          var csrfToken = "{{ csrf_token }}";
-          var itemId = $(this).attr('id').split('remove_')[1];
-          var size = $(this).data('product_size');
-          var url = `/bag/remove/${itemId}/`;
-          var data = {'csrfmiddlewaretoken': csrfToken, 'product_size': size};
-          $.post(url, data)
-          .done(function() {
-              location.reload();
-          });
-      })
+  <script type="text/javascript">
+    $('.toast').toast('show');
   </script>
+
   {% endblock %}
 
 </body>
