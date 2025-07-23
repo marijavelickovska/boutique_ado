@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from .forms import OrderForm
 
-
 def checkout(request):
     bag = request.session.get('bag', {})
     if not bag:
@@ -13,6 +12,8 @@ def checkout(request):
     template = 'checkout/checkout.html'
     context = {
         'order_form': order_form,
+        'stripe_public_key': 'pk_test_51RnzQW7mV5sULhgnFCKZl3vSfXflVJZ3h5HxnW5bJWeq9wWyW2AMFePOF0ehpJQGyZv62tlpTfDWinYoc3zwNvoV00uNuu9ics',
+        'client_secret': 'test client secret',
     }
 
     return render(request, template, context)
