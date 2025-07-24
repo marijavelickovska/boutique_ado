@@ -134,17 +134,18 @@
             </div>
         </div>
     </div>
+    <div id="loading-overlay">  <!-- za pojavuvanje na confiramtion pop-up od strike na klik na complete order-->
+        <h1 class="text-light logo-font loading-spinner">
+            <span class="icon">
+                <i class="fas fa-3x fa-sync-alt fa-spin"></i>
+            </span>
+        </h1>
+    </div>
 {% endblock %}
 
 {% block postloadjs %}
     {{ block.super }}
-    <!-- Since we can't render Django template variables in external javascript files.
-    We need to use a built-in template filter called json_script
-    To render them here. And then we can access them in the external js file. 
-    Ako odis vo checkout.html, vo inspect ke go vidis deka kodot pod komentarov gi dava ovi dva redovi 
-    <script id="id_stripe_public_key" type="application/json">"pk_test_51RnzQW7mV5sULhgnFCKZl3vSfXflVJZ3h5HxnW5bJWeq9wWyW2AMFePOF0ehpJQGyZv62tlpTfDWinYoc3zwNvoV00uNuu9ics"</script>
-    <script id="id_client_secret" type="application/json">"test client secret"</script>    -->
-    {{ stripe_public_key|json_script:"id_stripe_public_key" }} 
+    {{ stripe_public_key|json_script:"id_stripe_public_key" }}
     {{ client_secret|json_script:"id_client_secret" }}
     <script src="{% static 'checkout/js/stripe_elements.js' %}"></script>
 {% endblock %}

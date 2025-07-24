@@ -1,5 +1,5 @@
 .StripeElement,
-.stripe-style-input {  /* ova klasa doaga od forms.py, bidejki ja stavivme ovaa klasa na ostanatite inputi za da gi napravime da imaat ist sti zaedno so payment*/
+.stripe-style-input {
   box-sizing: border-box;
   height: 40px;
   padding: 10px 12px;
@@ -12,8 +12,8 @@
 }
 
 .StripeElement--focus,
-.stripe-style-input:focus,    /* i tuka ja stavivme taa klasa */
-.stripe-style-input:active {  /* i tuka ja stavivme taa klasa */
+.stripe-style-input:focus,
+.stripe-style-input:active {
   box-shadow: 0 1px 3px 0 #cfd7df;
 }
 
@@ -21,7 +21,7 @@
   background-color: #fefde5 !important;
 }
 
-.stripe-style-input::placeholder {  /* i tuka ja stavivme taa klasa */
+.stripe-style-input::placeholder {
     color: #aab7c4;
 }
 
@@ -34,4 +34,23 @@
 #card-element {
     color: #000;
     border: 1px solid #000;
+}
+
+#loading-overlay {
+	display: none;
+	position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(23, 162, 184, .85);
+    z-index: 9999;
+}
+
+.loading-spinner {
+	display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    height: 100%;
 }
