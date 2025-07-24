@@ -62,7 +62,7 @@ form.addEventListener('submit', function(ev) {
     stripe.confirmCardPayment(clientSecret, {
         payment_method: {
             card: card,
-        }
+        }                                             
     }).then(function(result) {
         if (result.error) {
             var errorDiv = document.getElementById('card-errors');
@@ -83,3 +83,11 @@ form.addEventListener('submit', function(ev) {
         }
     });
 });
+
+// Stripe could potentially confirm the payment, but the user could close the page before the form is submitted on line 81
+// To prevent this situation we're going to build in some redundancy.
+// Each time an event occurs on stripe such as a payment intent being created, a payment being completed and so on stripe sends out what's called a webhook we can listen for.
+// Webhooks are like the signals django sends each time a model is saved or deleted.
+// Except that they're sent securely from stripe to a URL we specify.
+// To handle these webhooks we're going to create our first custom class.
+// I'll create a new file here called webhook_handler.py
