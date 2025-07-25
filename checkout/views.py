@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.shortcuts import render, redirect, reverse, get_object_or_404, HttpResponse
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.conf import settings
 
@@ -8,6 +9,34 @@ from products.models import Product
 from bag.contexts import bag_contents
 
 import stripe
+import json
+
+
+
+# What's gonna happen here is before we call the confirm card payment method in the stripe JavaScrip,
+# we'll make a post request to this view and give it the client secret from the payment intent. If we split that at the word secret,
+# the first part of it will be the payment intent Id, so I'll store that in a variable called pid.
+# Then I'll set up stripe with the secret key so we can modify the payment intent. 
+# To do it all we have to do is call stripe.PaymentIntent.modify, give it the pid and tell it what we want to modify in our case 
+# we'll add some metadata. Let's add the user who's placing the order, Will add whether or not they wanted to save their information,
+# and most importantly we'll add a JSON dump of their shopping bag which we'll use a little later.
+
+@require_POST
+def cache_checkout_data(request):
+    try:
+        pid = request.POST.get('client_secret').split('_secret')[0]
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        stripe.PaymentIntent.modify(pid, metadata={
+            'bag': json.dumps(request.session.get('bag', {})),
+            'save_info': request.POST.get('save_info'),
+            'username': request.user,
+        })
+        return HttpResponse(status=200)
+    except Exception as e:
+        messages.error(request, 'Sorry, your payment cannot be \
+            processed right now. Please try again later.')
+        return HttpResponse(content=e, status=400)
+
 
 def checkout(request):
     stripe_public_key = settings.STRIPE_PUBLIC_KEY
@@ -62,20 +91,19 @@ def checkout(request):
         else:
             messages.error(request, 'There was an error with your form. \
                 Please double check your information.')
-
     else:
         bag = request.session.get('bag', {})
         if not bag:
             messages.error(request, "There's nothing in your bag at the moment")
             return redirect(reverse('products'))
-        
+
         # ova raboti vo sustina za shoping bag, odnosno get product from db i stavi go vo sesija,
         # na klik na chechout se kreira stripe.PaymentIntent
         current_bag = bag_contents(request)
         total = current_bag['grand_total']
         stripe_total = round(total * 100)  # za da bide cel broj, a nas grand total ni e so dve decimali
         stripe.api_key = stripe_secret_key
-        intent = stripe.PaymentIntent.create(  
+        intent = stripe.PaymentIntent.create(
             amount=stripe_total,
             currency=settings.STRIPE_CURRENCY,
         )
@@ -107,7 +135,7 @@ def checkout_success(request, order_number):
     messages.success(request, f'Order successfully processed! \
         Your order number is {order_number}. A confirmation \
         email will be sent to {order.email}.')
-    
+
     if 'bag' in request.session:
         del request.session['bag']
 
@@ -115,4 +143,5 @@ def checkout_success(request, order_number):
     context = {
         'order': order,
     }
+
     return render(request, template, context)
