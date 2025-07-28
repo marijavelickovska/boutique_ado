@@ -129,7 +129,7 @@ form.addEventListener('submit', function(ev) {
                 $('#submit-button').attr('disabled', false);
             } else {
                 if (result.paymentIntent.status === 'succeeded') {
-                    form.submit();  // koga sakas da testiras, mozes samo ovoj red da go zakomentiras za da vidis vo stripe i vo admin dali ke se kreira order
+                    form.submit();  // koga sakas da testiras webhooks, mozes samo ovoj red da go zakomentiras za da vidis vo stripe i vo admin dali ke se kreira order
                 }
             }
         });
